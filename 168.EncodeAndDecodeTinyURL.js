@@ -13,7 +13,7 @@
  * @return {string}
  */
 var encode = function(longUrl) {
-    return encodeURIComponent(longUrl);
+    return 'http://tinyurl.com/' + encodeURIComponent(longUrl);
 };
 
 /**
@@ -23,7 +23,7 @@ var encode = function(longUrl) {
  * @return {string}
  */
 var decode = function(shortUrl) {
-    return decodeURIComponent(shortUrl);
+    return decodeURIComponent(shortUrl.slice(19));
 };
 
 /**
