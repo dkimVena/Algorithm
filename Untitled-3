@@ -1,0 +1,64 @@
+'use strict';
+
+const fs = require('fs');
+
+process.stdin.resume();
+process.stdin.setEncoding('utf-8');
+
+let inputString = '';
+let currentLine = 0;
+
+process.stdin.on('data', function(inputStdin) {
+    inputString += inputStdin;
+});
+
+process.stdin.on('end', function() {
+    inputString = inputString.split('\n');
+
+    main();
+});
+
+function readLine() {
+    return inputString[currentLine++];
+}
+
+
+
+/*
+ * Complete the 'budgetShopping' function below.
+ *
+ * The function is expected to return an INTEGER.
+ * The function accepts following parameters:
+ *  1. INTEGER n
+ *  2. INTEGER_ARRAY bundleQuantities
+ *  3. INTEGER_ARRAY bundleCosts
+ */
+
+function budgetShopping(n, bundleQuantities, bundleCosts) {
+    const helpShopping = (n, cost, quantity, max, position, count) => {
+        if (n == 0 || position == cost.length) {
+            if (count > max[0]) {
+                max[0] = count;
+            }
+            return;
+        }
+        for (let i = 0; i <= n / cost[position]; i++) {
+            helpShopping(n - i * cost[position], cost, quantity, max, position + 1, count + i * quantity[position]);
+        }
+    }
+
+    if (n <= 0
+        || bundleCosts == null || bundleQuantities == null
+        || bundleCosts.length == 0 || bundleQuantities.length == 0
+        || bundleCosts.length != bundleQuantities.length
+    ) {
+        return 0;
+    }
+
+    let max = [0];
+    helpShopping(n, bundleCosts, bundleQuantities, max, 0, 0);
+    return max[0];
+
+}
+
+function main() {

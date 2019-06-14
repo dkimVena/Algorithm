@@ -1,0 +1,69 @@
+process.stdin.resume();
+process.stdin.setEncoding('utf-8');
+
+var https = require('https');
+var __input_stdin = "";
+var __input_stdin_array = "";
+var __input_currentline = 0;
+
+process.stdin.on('data', function (data) {
+    __input_stdin += data;
+});
+
+/*
+ * Complete the function below.
+ * Instead of returning the answer, log the answer to the console.
+ * https://jsonmock.hackerrank.com/api/countries/search?name=  
+ */
+
+async function getCountries(s, p) {
+    let count = 0;
+    https.get(`https://jsonmock.hackerrank.com/api/countries/search?name=${s}`, resp => {
+        let data = '';
+
+        resp.on('data', (chunk) => {
+            data += chunk;
+        });
+        resp.on('end', async () => {
+            let result = JSON.parse(data);
+            let pages = result.total_pages;
+            result.data.map(item => {
+                if (item.population > p) count++;
+            })
+
+            if (pages > 1) {
+                for (let i = 2; i <= pages; i++) {
+                    https.get(`https://jsonmock.hackerrank.com/api/countries/search?name=${s}&page=${i}`, resp => {
+                        let data = '';
+
+                        resp.on('data', (chunk) => {
+                            data += chunk;
+                        });
+                        resp.on('end', () => {
+                            let result = JSON.parse(data);
+                            result.data.map(item => {
+                                if (item.population > p) { count++; };
+                            })
+                        });
+                    }).on("error", (err) => {
+                        console.log("Error: " + err.message);
+                    });
+                }
+            } 
+            console.log(count);
+            
+            
+        });
+    }).on("error", (err) => {
+        console.log("Error: " + err.message);
+    });
+}
+
+process.stdin.on('end', function () {
+    __input_stdin_array = __input_stdin.split("\n");
+    var _s = __input_stdin_array[__input_currentline].trim();
+    __input_currentline += 1;
+    var _p = parseInt(__input_stdin_array[__input_currentline].trim());
+    __input_currentline += 1;
+    getCountries(_s, _p);
+});

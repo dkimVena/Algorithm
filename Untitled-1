@@ -1,0 +1,160 @@
+<div>
+  <div id="alerts"></div>
+</div>
+
+for(let i=0; i<20; i++) {
+  let button = document.createElement('button');
+  button.innerHTML = i;
+  button.onclick = function(){
+    alert(i);
+  };
+  document.getElementById('alerts').appendChild(button);
+}
+
+
+static: it is default value. elements' locations are placed in normal order.
+relative: elements are positioned relative to it self.
+absolute: elements are positioned relative to its parent.
+fixed: elements are positioned without being affected by other elements.
+
+flex-wrap
+nowrap
+The flex items can be out of container when they are overflow.
+The flex items break into multiple lines when they are overflow. 
+wrap-reverse
+Same as wrap option but itmes are reversed.
+
+
+
+
+  <div class="first box">
+  Div 3
+  <div class="second box">
+  Div2
+    <div class="third box">
+    Div 3</div>
+  </div>
+  </div>
+
+
+.box {
+  text-align: center;
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform: translate(-50%, -50%);
+  width: 70%;
+  height: 70%;
+}
+.first {
+  background: red;
+}
+
+.second {
+  background: blue;
+
+}
+
+.third {
+  border: solid 1px red;
+}
+
+
+
+<div class="container">
+<div class="card">
+  <img src="img.jpg" alt="John">
+  <h1>David Kim</h1>
+  <p class="title">Developer</p>
+  <p>paragraph</p>
+</div>
+<div class="card">
+  <img src="img.jpg" alt="John">
+  <h1>David Kim</h1>
+  <p class="title">Developer</p>
+  <p>paragraph</p>
+</div>
+</div>
+
+.card {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  width: 720px;
+  margin: auto;
+  text-align: center;
+  background: white;
+}
+
+.title {
+  color: grey;
+  font-size: 18px;
+}
+
+.container {
+  display: flex;
+}
+
+
+
+
+process.stdin.resume();
+process.stdin.setEncoding('utf-8');
+
+var https = require('https');
+var __input_stdin = "";
+var __input_stdin_array = "";
+var __input_currentline = 0;
+
+process.stdin.on('data', function (data) {
+    __input_stdin += data;
+});
+
+/*
+ * Complete the function below.
+ * Instead of returning the answer, log the answer to the console.
+ * https://jsonmock.hackerrank.com/api/countries/search?name=  
+ */
+
+async function getCountries(s, p) {
+    let count = 0;
+    https.get(`https://jsonmock.hackerrank.com/api/countries/search?name=${s}`, resp => {
+        let data = '';
+
+        resp.on('data', (chunk) => {
+            data += chunk;
+        });
+        resp.on('end', async () => {
+            let result = JSON.parse(data);
+            let pages = result.total_pages;
+            result.data.map(item => {
+                if (item.population > p) count++;
+            })
+
+            if (pages > 1) {
+                for (let i = 2; i <= pages; i++) {
+                    https.get(`https://jsonmock.hackerrank.com/api/countries/search?name=${s}&page=${i}`, resp => {
+                        let data = '';
+
+                        resp.on('data', (chunk) => {
+                            data += chunk;
+                        });
+                        resp.on('end', () => {
+                            let result = JSON.parse(data);
+                            result.data.map(item => {
+                                if (item.population > p) { count++; };
+                            })
+                        });
+                    }).on("error", (err) => {
+                        console.log("Error: " + err.message);
+                    });
+                }
+            } 
+            console.log(count);
+            
+            
+        });
+    }).on("error", (err) => {
+        console.log("Error: " + err.message);
+    });
+}
+
+process.stdin.on('end', function () {
